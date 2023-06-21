@@ -176,7 +176,7 @@ const option::Descriptor usage[] = {
     "",
     "smt-solver",
     Arg::NonEmpty,
-    "  --smt-solver \tSMT Solver to use: btor, msat, or cvc5." },
+    "  --smt-solver \tSMT Solver to use: btor, msat, bitwuzla, or cvc5." },
   { LOGGING_SMT_SOLVER,
     0,
     "",
@@ -670,13 +670,17 @@ ProverResult PonoOptions::parse_and_set_options(int argc,
           witness_ = true;  // implicitly enabling witness
           break;
         case SMT_SOLVER: {
+          printf("SMT_SOLVER: %s\n", opt.arg);
           if (opt.arg == std::string("btor")) {
             smt_solver_ = smt::BTOR;
           } else if (opt.arg == std::string("cvc5")) {
             smt_solver_ = smt::CVC5;
           } else if (opt.arg == std::string("msat")) {
             smt_solver_ = smt::MSAT;
-          } else {
+          } else if (opt.arg == std::string("bitwuzla")) {
+            smt_solver_ = smt::BZLA;
+          } 
+          else {
             throw PonoException("Unknown solver: " + std::string(opt.arg));
             break;
           }

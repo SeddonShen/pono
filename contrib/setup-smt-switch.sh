@@ -3,7 +3,7 @@
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 DEPS=$DIR/../deps
 
-SMT_SWITCH_VERSION=445b5bc5172cc4a56db121e5ba4c7a5e14147bd5
+SMT_SWITCH_VERSION=8d974f9b35c5dacd7eb89ee048dc11227d9c9700
 
 usage () {
     cat <<EOF
@@ -59,17 +59,24 @@ mkdir -p $DEPS
 
 if [ ! -d "$DEPS/smt-switch" ]; then
     cd $DEPS
-    git clone https://github.com/makaimann/smt-switch
+    git clone https://github.com/SeddonShen/smt-switch
     cd smt-switch
     git checkout -f $SMT_SWITCH_VERSION
     ./contrib/setup-btor.sh
     if [ $cvc5_home = default ]; then
+    echo "@@@@CVC5@@@@Install"
         ./contrib/setup-cvc5.sh
     fi
+    ./contrib/setup-bitwuzla.sh
+    echo "@@@@CVC5@@@@ End" 
     # pass bison/flex directories from smt-switch perspective
-    ./configure.sh --btor --cvc5 $CONF_OPTS --prefix=local --static --smtlib-reader --bison-dir=../bison/bison-install --flex-dir=../flex/flex-install
+    echo "@@@@End1@@@@"
+    echo $CONF_OPTS
+    # ./configure.sh --btor --cvc5 --cvc5-home=/Users/seddonshen/Coding/cvc5 --prefix=local --static --smtlib-reader --bison-dir=../bison/bison-install --flex-dir=../flex/flex-install
+    ./configure.sh --btor --cvc5 --bitwuzla $CONF_OPTS --prefix=local --static --smtlib-reader --bison-dir=../bison/bison-install --flex-dir=../flex/flex-install
+    echo "@@@@End2@@@@"
     cd build
-    make -j$(nproc)
+    make -j8
     make test
     make install
     cd $DIR
